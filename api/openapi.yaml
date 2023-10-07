@@ -1,0 +1,1604 @@
+openapi: 3.0.0
+info:
+  description: |
+    # Overview
+    Unity Remote Config is a cloud service that allows you to tune your game design without deploying new versions of your application. With Remote Config, you can:
+
+    Adapt your game to different types of players.
+    Tune your game difficulty curve in near real time.
+    Alter graphic quality based on device to optimize performance.
+    Roll out new features gradually while monitoring impact.
+    Tailor game settings to different regions or other player segments.
+    Run campaign tests comparing colors, styles, prices, etc.
+    Turn seasonal, holiday, or other time-sensitive events on or off.
+    Enable or disable features for specific player segments or across the entire user base.
+
+    Define Game Overrides that control which players receive what settings updates, and when. Unity manages the delivery and assignment of those settings with minimal impact to performance. No update to your application is necessary. When a player launches your game, Remote Config detects contextual attributes used as game override conditions, based on Unity, the application, the user, or custom criteria that you define. The service then returns customized settings for each player according to the game overrides that apply to them. This allows different players using the same version of your game to have slightly different experiences. It also allows you to understand the impact each experience has on your business.
+
+    # Limitation
+    * A configuration can have a max payload size of 5MB
+    * A string limit is only of 65 535 characters
+  title: Remote Config Admin API
+  version: v1
+servers:
+- url: https://services.api.unity.com
+tags:
+- description: Manage multiple environments to allow for use cases around separate
+    development and release environments as well as version control. Each project
+    has a default environment which can not be deleted. The default environment is
+    served when no other environment is specified.
+  name: Environments
+- description: "Interact with configs to store settings. A Setting is a key that you’\
+    ll map to a parameter in your game code, so you can dynamically change its value\
+    \ without changing your code."
+  name: Configs
+- description: "Game Overrides allow you to optimize your player experience by making\
+    \ it easy to override default config variables within your game without requiring\
+    \ a code update or app deployment. You can target specific groups of players for\
+    \ seasonal or promotional Overrides, or you can experiment with A/B testing to\
+    \ increase engagement for specific player segments. Game Overrides are built on-top\
+    \ of Remote Config, with integrations with several other Unity products."
+  name: Game Overrides
+paths:
+  /remote-config/v1/projects/{projectId}/environments:
+    get:
+      description: Returns the list of environments for a Project.
+      parameters:
+      - description: Genesis projectId
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetEnvironmentsResponse'
+          description: successful operation
+        "403":
+          description: Forbidden
+      security:
+      - ServiceAccount:
+        - remote_config.configs.list
+      summary: Get All Environments
+      tags:
+      - Environments
+      x-codeSamples:
+      - lang: curl
+        source: |
+          curl -X GET \
+          https://services.api.unity.com/remote-config/v1/projects/{projectId}/environments \
+            -H 'Authorization: Basic <base64(key_id:secret_key)>'
+  /remote-config/v1/projects/{projectId}/environments/{environmentId}:
+    get:
+      description: Return environment for a given ID
+      parameters:
+      - description: Environment Id
+        explode: false
+        in: path
+        name: environmentId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Genesis projectId
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Environment'
+          description: Successful Operation
+        "403":
+          description: Forbidden
+        "404":
+          description: Environment not found
+      security:
+      - ServiceAccount:
+        - remote_config.configs.list
+      summary: Get Environment
+      tags:
+      - Environments
+      x-codeSamples:
+      - lang: curl
+        source: |
+          curl -X GET \
+          https://services.api.unity.com/remote-config/v1/projects/{projectId}/environments/{environmentId} \
+            -H 'Authorization: Basic <base64(key_id:secret_key)>'
+  /remote-config/v1/projects/{projectId}/environments/default:
+    get:
+      description: Obtain the id of the default environment.
+      parameters:
+      - description: Genesis projectId
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultEnvironmentResponse'
+          description: Successful Operation
+        "403":
+          description: Forbidden
+        "404":
+          description: Environment not found (no environments created yet)
+      security:
+      - ServiceAccount:
+        - remote_config.configs.list
+      summary: Get Default Environment
+      tags:
+      - Environments
+      x-codeSamples:
+      - lang: curl
+        source: |
+          curl -X GET \
+          https://services.api.unity.com/remote-config/v1/projects/{projectId}/environments/default \
+            -H 'Authorization: Basic <base64(key_id:secret_key)>' \
+  /remote-config/v1/projects/{projectId}/configs:
+    get:
+      description: Obtain the configs with the default environment 'production' or
+        specified environment id
+      parameters:
+      - description: Genesis projectId
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Config'
+          description: successful operation
+      security:
+      - ServiceAccount:
+        - remote_config.configs.list
+      summary: Get config with the default environment
+      tags:
+      - Configs
+      x-codeSamples:
+      - lang: curl
+        source: |
+          curl -X GET \
+          https://services.api.unity.com/remote-config/v1/projects/{projectId}/configs \
+            -H 'Authorization: Basic <base64(key_id:secret_key)>' \
+    post:
+      description: Create Config.
+      parameters:
+      - description: Genesis projectId
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/Config'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateConfigResponse'
+          description: successful operation
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+      security:
+      - ServiceAccount:
+        - remote_config.configs.create
+      summary: Create Config
+      tags:
+      - Configs
+      x-codeSamples:
+      - lang: curl
+        source: "curl -X POST \\\nhttps://services.api.unity.com/remote-config/v1/projects/{projectId}/configs\
+          \ \\\n  -H 'Authorization: Basic <base64(key_id:secret_key)>'\n  -d '{\n\
+          \  \t\"environmentId\": \"<environmentId>\",\n  \t\"type\": \"settings\"\
+          ,\n  \t\"value\": []\n  }'\n"
+  /remote-config/v1/projects/{projectId}/configs/{configId}:
+    delete:
+      description: Deletes an existing Config
+      parameters:
+      - description: Configuration Id
+        explode: false
+        in: path
+        name: configId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Genesis projectId
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: No Content
+        "403":
+          description: Forbidden
+      security:
+      - ServiceAccount:
+        - remote_config.configs.delete
+      summary: Delete Config
+      tags:
+      - Configs
+      x-codeSamples:
+      - lang: curl
+        source: |
+          curl -X DELETE \
+          https://services.api.unity.com/remote-config/v1/projects/{projectId}/configs/{configId} \
+            -H 'Authorization: Basic <base64(key_id:secret_key)>'
+    get:
+      description: Returns Config for a given ID
+      parameters:
+      - description: Configuration Id
+        explode: false
+        in: path
+        name: configId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Genesis projectId
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Config'
+          description: successful operation
+        "403":
+          description: Forbidden
+      security:
+      - ServiceAccount:
+        - remote_config.configs.list
+      summary: Get Config
+      tags:
+      - Configs
+      x-codeSamples:
+      - lang: curl
+        source: |
+          curl -X GET \
+          https://services.api.unity.com/remote-config/v1/projects/{projectId}/configs/{configId} \
+            -H 'Authorization: Basic <base64(key_id:secret_key)>'
+    put:
+      description: Updates the value of an existing Config
+      parameters:
+      - description: Configuration Id
+        explode: false
+        in: path
+        name: configId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Genesis projectId
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateConfig'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+      security:
+      - ServiceAccount:
+        - remote_config.configs.update
+      summary: Update Config
+      tags:
+      - Configs
+      x-codeSamples:
+      - lang: curl
+        source: "curl -X PUT \\\nhttps://services.api.unity.com/remote-config/v1/projects/{projectId}/configs/{configId}\
+          \ \\\n  -H 'Authorization: Basic <base64(key_id:secret_key)>' \\\n  -d '{\n\
+          \  \t\"type\": \"settings\",\n  \t\"value\": []\n  }'\n"
+  /remote-config/v1/projects/{projectId}/environments/{environmentId}/configs:
+    get:
+      description: "Returns the list of all configs for a Environment. Currently,\
+        \ the only supported config type is \"settings\""
+      parameters:
+      - description: Environment Id
+        explode: false
+        in: path
+        name: environmentId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Genesis projectId
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_remote_config_v1_projects__projectId__environments__environmentId__configs_get_200_response'
+          description: successful operation
+        "403":
+          description: Forbidden
+      security:
+      - ServiceAccount:
+        - remote_config.configs.get
+      summary: Get Configs by Environment ID
+      tags:
+      - Configs
+      x-code-samples:
+      - lang: curl
+        source: |
+          curl -X GET \
+          https://services.api.unity.com/remote-config/v1/projects/{projectId}/environments/{environmentId}/configs \
+            -H 'Authorization: Basic <base64(key_id:secret_key)>'
+  /remote-config/v1/projects/{projectId}/configs:copyto:
+    post:
+      description: Copies specified settings from a source Config to a destination
+        Config
+      parameters:
+      - description: Genesis projectId
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigCopyRequest'
+        description: "IDs for source and destination Config, and Settings keys to\
+          \ be copied"
+        required: true
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_remote_config_v1_projects__projectId__configs_copyto_post_404_response'
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_remote_config_v1_projects__projectId__configs_copyto_post_409_response'
+          description: Conflict
+      security:
+      - ServiceAccount:
+        - remote_config.configs.create
+      summary: Copy Config Settings
+      tags:
+      - Configs
+      x-code-samples:
+      - lang: curl
+        source: "curl -X POST \\\nhttps://services.api.unity.com/remote-config/v1/projects/{projectId}/configs:copyto\
+          \ \\\n  -H 'Authorization: Basic <base64(key_id:secret_key)>'\n  -d '{\n\
+          \  \t\"sourceConfigId\": \"<configId>\",\n    \"destinationConfigId\": \"\
+          <configId>\",\n  \t\"settings\": [\"<keyOne>\",\"<keyTwo>\"]\n  }'\n"
+  /remote-config/v1/projects/{projectId}/environments/{environmentId}/campaigns:
+    get:
+      description: Returns all game overrides for a given project and environment
+      operationId: getAllGameOverrides
+      parameters:
+      - description: Genesis projectId
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Genesis environmentId
+        explode: false
+        in: path
+        name: environmentId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllCampaignsResponse'
+          description: successful operation
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+      security:
+      - ServiceAccount:
+        - remote_config.game_overrides.list
+      summary: Get all game overrides
+      tags:
+      - Game Overrides
+    post:
+      description: |
+        Create a new game override
+      operationId: createGameOverride
+      parameters:
+      - description: Genesis projectId
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Campaign'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCampaignResponse'
+          description: successful operation
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+      security:
+      - ServiceAccount:
+        - remote_config.game_overrides.create
+      summary: Create a game override
+      tags:
+      - Game Overrides
+  /remote-config/v1/projects/{projectId}/campaigns/{campaignId}:
+    delete:
+      description: Deletes existing game override
+      operationId: deleteGameOverride
+      parameters:
+      - description: Campaign ID
+        explode: false
+        in: path
+        name: campaignId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Project Id
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+        "404":
+          description: Campaign Not Found
+      security:
+      - ServiceAccount:
+        - remote_config.game_overrides.delete
+      summary: Delete a single game override
+      tags:
+      - Game Overrides
+    get:
+      description: Retrieve a game override
+      operationId: getGameOverride
+      parameters:
+      - description: Campaign ID
+        explode: false
+        in: path
+        name: campaignId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Project Id
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCampaignResponse'
+          description: A single campaign
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+      security:
+      - ServiceAccount:
+        - remote_config.game_overrides.list
+      summary: Get a single game override
+      tags:
+      - Game Overrides
+    put:
+      description: Updates an existing game override
+      operationId: updateGameOverride
+      parameters:
+      - description: Campaign ID
+        explode: false
+        in: path
+        name: campaignId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Project Id
+        explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Campaign'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+      security:
+      - ServiceAccount:
+        - remote_config.game_overrides.update
+      summary: Update a single game override
+      tags:
+      - Game Overrides
+components:
+  requestBodies:
+    Config:
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/Config'
+      description: Config object
+      required: true
+    UpdateConfig:
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/UpdateConfig'
+      description: Updated Config values
+      required: true
+  schemas:
+    Id:
+      format: uuid
+      readOnly: true
+      title: Id
+      type: string
+    ProjectId:
+      format: genesis-project-id
+      readOnly: true
+      title: ProjectId
+      type: string
+    EnvironmentId:
+      format: uuid
+      readOnly: true
+      title: EnvironmentId
+      type: string
+    CreatedAt:
+      format: date-time
+      readOnly: true
+      title: CreatedAt
+      type: string
+    UpdatedAt:
+      format: date-time
+      readOnly: true
+      title: UpdatedAt
+      type: string
+    SettingKey:
+      maximum: 255
+      minimum: 1
+      title: SettingKey
+      type: string
+    condition:
+      description: |
+        The Condition is a JEXL expression of contextual data attributes that defines the target audience for a game override.
+
+        ### JEXL support
+
+        - `JexlExpression` from the [Java Expression Language (JEXL) spec](https://commons.apache.org/proper/commons-jexl/reference/syntax.html).
+        - `JexlScripts` are not supported.
+
+        ### Categories
+
+        Remote Config supports the following attribute categories.
+
+        Category | Description
+        -------- | -----------
+        `user`   | Custom developer-defined attributes that describe the user.
+        `app`    | Custom developer-defined attributes that describe the application.
+        `unity`  | Predefined attributes (detailed below).
+
+        #### Custom User ID
+
+        When you call `SetCustomUserId` in our C# APIs, this automatically exposes the ID you pass in to the `user` attributes.
+
+        Example from C#:
+        ```
+        ConfigManager.SetCustomUserID("some-user-id");
+        ```
+
+        Allows you to create a game override condition like:
+
+        ```
+        user.customUserId == "some-user-id"
+        ```
+
+        #### Predefined `unity` attributes
+
+        Attribute              | Type |   Description | Example
+        ---------              | ----   | ----------- | -------
+        `appBuildVersion`      | String | The build number your application is running. | `"1"`
+        `appVersion`           | String | The version your application is running. | `"1.0"`
+        `cpu`                  | String | The name of the CPU processor. | `"Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz"`
+        `cpuFrequency`         | Int    | The processor frequency in MHz of the device running your app. | `3100`
+        `country`              | String | The applicable country. This attribute uses ISO 3166-1 alpha2 country codes. | `"US"`
+        `language`             | String | The applicable language. This attribute uses ISO 639-1 language codes. | `"en"`
+        `osVersion`            | String | The operating system version of the device running your app. | `"Mac OS X 10.14.3"`
+        `platform`             | String | The applicable device or platform (see below). | `"iOS"`
+        `timeSinceStart`       | Int    | The time in milliseconds since a session of your app has begun. | `2473741`
+        `graphicsDeviceVendor` | String | Vendor of the user's graphics card. | `"ATI Technologies Inc."`
+        `ram`                  | Int    | Amount of RAM in MB on the device. | `16384`
+
+        #### Supported platforms
+
+          - `Android`
+          - `iOS`
+          - `Linux`
+          - `macOS`
+          - `Metro`
+          - `SamsungTV`
+          - `Switch`
+          - `Tizen`
+          - `tvOS`
+          - `WebGL`
+          - `Wii`
+          - `Windows`
+      example: app.score >= 10
+      readOnly: true
+      title: Condition
+      type: string
+    Environment:
+      description: A environment
+      example:
+        createdAt: ""
+        name: name
+        id: ""
+        projectId: ""
+        updatedAt: ""
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/Id'
+        projectId:
+          allOf:
+          - $ref: '#/components/schemas/ProjectId'
+        name:
+          type: string
+        createdAt:
+          allOf:
+          - $ref: '#/components/schemas/CreatedAt'
+        updatedAt:
+          allOf:
+          - $ref: '#/components/schemas/UpdatedAt'
+      required:
+      - name
+      type: object
+    GetEnvironmentsResponse:
+      example:
+        environments:
+        - createdAt: ""
+          name: name
+          id: ""
+          projectId: ""
+          updatedAt: ""
+        - createdAt: ""
+          name: name
+          id: ""
+          projectId: ""
+          updatedAt: ""
+      properties:
+        environments:
+          items:
+            $ref: '#/components/schemas/Environment'
+          type: array
+      type: object
+    CreateEnvironmentResponse:
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/Id'
+        createdAt:
+          allOf:
+          - $ref: '#/components/schemas/CreatedAt'
+      type: object
+    DefaultEnvironmentResponse:
+      description: A environment
+      example:
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        id:
+          format: uuid
+          type: string
+      required:
+      - id
+      type: object
+    CreateCampaignResponse:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        id:
+          format: uuid
+          readOnly: true
+          title: Id
+          type: string
+        createdAt:
+          format: date-time
+          readOnly: true
+          title: CreatedAt
+          type: string
+      title: CreateCampaignResponse
+      type: object
+    CampaignContentVariant:
+      example:
+        values:
+        - null
+        - null
+        type: settings
+      properties:
+        type:
+          enum:
+          - settings
+          - economy
+          - ccd
+          type: string
+        values:
+          items:
+            $ref: '#/components/schemas/Setting'
+          type: array
+      required:
+      - type
+      - values
+      title: CampaignContentVariant
+    CampaignVariants:
+      example:
+        name: name
+        weight: 0
+        content:
+        - values:
+          - null
+          - null
+          type: settings
+        - values:
+          - null
+          - null
+          type: settings
+      properties:
+        name:
+          type: string
+        weight:
+          description: |
+            Conditionally optional. If no variants have a weight then Remote Config will treat each variant as equally distributed. However, if one variant has a weight then all variants must define a weight.
+
+            If defined, the sum of all variant's weights must equal 100
+          type: integer
+        content:
+          items:
+            $ref: '#/components/schemas/CampaignContentVariant'
+          type: array
+      required:
+      - id
+      - type
+      - values
+      title: CampaignVariants
+    Campaign:
+      description: Response type for a Campaign.
+      example:
+        audience:
+        - All
+        kpi:
+        - kpi
+        - kpi
+        endDate: 2020-08-09T17:13:56Z
+        description: This override is a test
+        variants:
+        - name: name
+          weight: 0
+          content:
+          - values:
+            - null
+            - null
+            type: settings
+          - values:
+            - null
+            - null
+            type: settings
+        - name: name
+          weight: 0
+          content:
+          - values:
+            - null
+            - null
+            type: settings
+          - values:
+            - null
+            - null
+            type: settings
+        rolloutPercentage: 8
+        priority: 602
+        enabled: false
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        condition: app.score >= 10
+        environmentId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        name: name
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        startDate: 2019-08-09T17:13:56Z
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          format: uuid
+          readOnly: true
+          title: Id
+          type: string
+        environmentId:
+          format: uuid
+          readOnly: true
+          title: EnvironmentId
+          type: string
+        name:
+          type: string
+        variants:
+          items:
+            $ref: '#/components/schemas/CampaignVariants'
+          type: array
+        enabled:
+          default: false
+          type: boolean
+        condition:
+          description: |
+            The Condition is a JEXL expression of contextual data attributes that defines the target audience for a game override.
+
+            ### JEXL support
+
+            - `JexlExpression` from the [Java Expression Language (JEXL) spec](https://commons.apache.org/proper/commons-jexl/reference/syntax.html).
+            - `JexlScripts` are not supported.
+
+            ### Categories
+
+            Remote Config supports the following attribute categories.
+
+            Category | Description
+            -------- | -----------
+            `user`   | Custom developer-defined attributes that describe the user.
+            `app`    | Custom developer-defined attributes that describe the application.
+            `unity`  | Predefined attributes (detailed below).
+
+            #### Custom User ID
+
+            When you call `SetCustomUserId` in our C# APIs, this automatically exposes the ID you pass in to the `user` attributes.
+
+            Example from C#:
+            ```
+            ConfigManager.SetCustomUserID("some-user-id");
+            ```
+
+            Allows you to create a game override condition like:
+
+            ```
+            user.customUserId == "some-user-id"
+            ```
+
+            #### Predefined `unity` attributes
+
+            Attribute              | Type |   Description | Example
+            ---------              | ----   | ----------- | -------
+            `appBuildVersion`      | String | The build number your application is running. | `"1"`
+            `appVersion`           | String | The version your application is running. | `"1.0"`
+            `cpu`                  | String | The name of the CPU processor. | `"Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz"`
+            `cpuFrequency`         | Int    | The processor frequency in MHz of the device running your app. | `3100`
+            `country`              | String | The applicable country. This attribute uses ISO 3166-1 alpha2 country codes. | `"US"`
+            `language`             | String | The applicable language. This attribute uses ISO 639-1 language codes. | `"en"`
+            `osVersion`            | String | The operating system version of the device running your app. | `"Mac OS X 10.14.3"`
+            `platform`             | String | The applicable device or platform (see below). | `"iOS"`
+            `timeSinceStart`       | Int    | The time in milliseconds since a session of your app has begun. | `2473741`
+            `graphicsDeviceVendor` | String | Vendor of the user's graphics card. | `"ATI Technologies Inc."`
+            `ram`                  | Int    | Amount of RAM in MB on the device. | `16384`
+
+            #### Supported platforms
+
+              - `Android`
+              - `iOS`
+              - `Linux`
+              - `macOS`
+              - `Metro`
+              - `SamsungTV`
+              - `Switch`
+              - `Tizen`
+              - `tvOS`
+              - `WebGL`
+              - `Wii`
+              - `Windows`
+          example: app.score >= 10
+          readOnly: true
+          title: Condition
+          type: string
+        kpi:
+          description: List of key performing indicators
+          items:
+            type: string
+          type: array
+        audience:
+          description: A list of audience whom you want to target your campaign
+          example:
+          - All
+          items:
+            type: string
+          type: array
+        rolloutPercentage:
+          default: 100
+          description: |
+            The percentage of your user base that will adhere to this game override. For values less than 100, Unity randomly assigns the game override to that percent of your players on a user ID basis. While experiences may differ from player to player, players will have a consistent experience each session.
+          maximum: 100
+          minimum: 0
+          type: integer
+        priority:
+          default: 1000
+          description: "Integer between 0 (highest priority) and 1000 (lowest priority).\
+            \ In the event of a conflict, priority is awarded to the game override\
+            \ that was created first."
+          maximum: 1000
+          minimum: 0
+          type: integer
+        startDate:
+          description: Timestamp in ISO 8601 UTC format (YYYY-MM-DDThh:mm:ssZ). Lower
+            bound for when enabled game overrides will go into effect.
+          example: 2019-08-09T17:13:56Z
+          format: date-time
+          type: string
+        endDate:
+          description: Timestamp in ISO 8601 UTC format (YYYY-MM-DDThh:mm:ssZ). Upper
+            bound for when enabled game overrides will cease to be active.
+          example: 2020-08-09T17:13:56Z
+          format: date-time
+          type: string
+        createdAt:
+          format: date-time
+          readOnly: true
+          title: CreatedAt
+          type: string
+        updatedAt:
+          format: date-time
+          readOnly: true
+          title: UpdatedAt
+          type: string
+        description:
+          example: This override is a test
+          type: string
+      title: Campaign
+      type: object
+    GetCampaignResponse:
+      description: Get Campaign response
+      example:
+        audience:
+        - All
+        endDate: 2020-08-09T17:13:56Z
+        kpi:
+        - kpi
+        - kpi
+        description: This override is a test
+        variants:
+        - name: name
+          weight: 0
+          content:
+          - values:
+            - null
+            - null
+            type: settings
+          - values:
+            - null
+            - null
+            type: settings
+        - name: name
+          weight: 0
+          content:
+          - values:
+            - null
+            - null
+            type: settings
+          - values:
+            - null
+            - null
+            type: settings
+        rolloutPercentage: 60
+        priority: 146
+        enabled: false
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        condition: app.score >= 10
+        environmentId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        name: name
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        projectId: projectId
+        startDate: 2019-08-09T17:13:56Z
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          format: uuid
+          readOnly: true
+          title: Id
+          type: string
+        environmentId:
+          format: uuid
+          readOnly: true
+          title: EnvironmentId
+          type: string
+        projectId:
+          format: genesis-project-id
+          readOnly: true
+          title: ProjectId
+          type: string
+        name:
+          type: string
+        variants:
+          items:
+            $ref: '#/components/schemas/CampaignVariants'
+          type: array
+        enabled:
+          default: false
+          type: boolean
+        rolloutPercentage:
+          default: 100
+          description: |
+            The percentage of your user base that will adhere to this game override. For values less than 100, Unity randomly assigns the game override to that percent of your players on a user ID basis. While experiences may differ from player to player, players will have a consistent experience each session.
+          maximum: 100
+          minimum: 0
+          type: integer
+        priority:
+          default: 1000
+          description: "Integer between 0 (highest priority) and 1000 (lowest priority).\
+            \ In the event of a conflict, priority is awarded to the game overrides\
+            \ that was created first."
+          maximum: 1000
+          minimum: 0
+          type: integer
+        condition:
+          description: |
+            The Condition is a JEXL expression of contextual data attributes that defines the target audience for a game override.
+
+            ### JEXL support
+
+            - `JexlExpression` from the [Java Expression Language (JEXL) spec](https://commons.apache.org/proper/commons-jexl/reference/syntax.html).
+            - `JexlScripts` are not supported.
+
+            ### Categories
+
+            Remote Config supports the following attribute categories.
+
+            Category | Description
+            -------- | -----------
+            `user`   | Custom developer-defined attributes that describe the user.
+            `app`    | Custom developer-defined attributes that describe the application.
+            `unity`  | Predefined attributes (detailed below).
+
+            #### Custom User ID
+
+            When you call `SetCustomUserId` in our C# APIs, this automatically exposes the ID you pass in to the `user` attributes.
+
+            Example from C#:
+            ```
+            ConfigManager.SetCustomUserID("some-user-id");
+            ```
+
+            Allows you to create a game override condition like:
+
+            ```
+            user.customUserId == "some-user-id"
+            ```
+
+            #### Predefined `unity` attributes
+
+            Attribute              | Type |   Description | Example
+            ---------              | ----   | ----------- | -------
+            `appBuildVersion`      | String | The build number your application is running. | `"1"`
+            `appVersion`           | String | The version your application is running. | `"1.0"`
+            `cpu`                  | String | The name of the CPU processor. | `"Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz"`
+            `cpuFrequency`         | Int    | The processor frequency in MHz of the device running your app. | `3100`
+            `country`              | String | The applicable country. This attribute uses ISO 3166-1 alpha2 country codes. | `"US"`
+            `language`             | String | The applicable language. This attribute uses ISO 639-1 language codes. | `"en"`
+            `osVersion`            | String | The operating system version of the device running your app. | `"Mac OS X 10.14.3"`
+            `platform`             | String | The applicable device or platform (see below). | `"iOS"`
+            `timeSinceStart`       | Int    | The time in milliseconds since a session of your app has begun. | `2473741`
+            `graphicsDeviceVendor` | String | Vendor of the user's graphics card. | `"ATI Technologies Inc."`
+            `ram`                  | Int    | Amount of RAM in MB on the device. | `16384`
+
+            #### Supported platforms
+
+              - `Android`
+              - `iOS`
+              - `Linux`
+              - `macOS`
+              - `Metro`
+              - `SamsungTV`
+              - `Switch`
+              - `Tizen`
+              - `tvOS`
+              - `WebGL`
+              - `Wii`
+              - `Windows`
+          example: app.score >= 10
+          readOnly: true
+          title: Condition
+          type: string
+        startDate:
+          description: Timestamp in ISO 8601 UTC format (YYYY-MM-DDThh:mm:ssZ). Lower
+            bound for when enabled game overrides will go into effect.
+          example: 2019-08-09T17:13:56Z
+          format: date-time
+          type: string
+        endDate:
+          description: Timestamp in ISO 8601 UTC format (YYYY-MM-DDThh:mm:ssZ). Upper
+            bound for when enabled game overrides will cease to be active.
+          example: 2020-08-09T17:13:56Z
+          format: date-time
+          type: string
+        kpi:
+          description: List of key performing indicators
+          items:
+            type: string
+          type: array
+        audience:
+          description: A list of audience whom you want to target your campaign
+          example:
+          - All
+          items:
+            type: string
+          type: array
+        createdAt:
+          format: date-time
+          readOnly: true
+          title: CreatedAt
+          type: string
+        updatedAt:
+          format: date-time
+          readOnly: true
+          title: UpdatedAt
+          type: string
+        description:
+          example: This override is a test
+          type: string
+      title: GetCampaignResponse
+      type: object
+    GetAllCampaignsResponse:
+      description: A list of all campaigns for a given project
+      example:
+        campaigns:
+        - audience:
+          - All
+          endDate: 2020-08-09T17:13:56Z
+          kpi:
+          - kpi
+          - kpi
+          description: This override is a test
+          variants:
+          - name: name
+            weight: 0
+            content:
+            - values:
+              - null
+              - null
+              type: settings
+            - values:
+              - null
+              - null
+              type: settings
+          - name: name
+            weight: 0
+            content:
+            - values:
+              - null
+              - null
+              type: settings
+            - values:
+              - null
+              - null
+              type: settings
+          rolloutPercentage: 60
+          priority: 146
+          enabled: false
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          condition: app.score >= 10
+          environmentId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          name: name
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          projectId: projectId
+          startDate: 2019-08-09T17:13:56Z
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        - audience:
+          - All
+          endDate: 2020-08-09T17:13:56Z
+          kpi:
+          - kpi
+          - kpi
+          description: This override is a test
+          variants:
+          - name: name
+            weight: 0
+            content:
+            - values:
+              - null
+              - null
+              type: settings
+            - values:
+              - null
+              - null
+              type: settings
+          - name: name
+            weight: 0
+            content:
+            - values:
+              - null
+              - null
+              type: settings
+            - values:
+              - null
+              - null
+              type: settings
+          rolloutPercentage: 60
+          priority: 146
+          enabled: false
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          condition: app.score >= 10
+          environmentId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          name: name
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          projectId: projectId
+          startDate: 2019-08-09T17:13:56Z
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        campaigns:
+          items:
+            $ref: '#/components/schemas/GetCampaignResponse'
+          type: array
+      type: object
+    Config:
+      description: A config object
+      example:
+        createdAt: ""
+        environmentId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        id: ""
+        type: settings
+        projectId: ""
+        value:
+        - null
+        - null
+        updatedAt: ""
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/Id'
+        projectId:
+          allOf:
+          - $ref: '#/components/schemas/ProjectId'
+        environmentId:
+          format: uuid
+          type: string
+        type:
+          description: We currently only support one config type.
+          enum:
+          - settings
+          type: string
+        value:
+          description: Array of `Setting` objects that represent the default values
+            in your game.
+          items:
+            $ref: '#/components/schemas/Setting'
+          type: array
+        createdAt:
+          allOf:
+          - $ref: '#/components/schemas/CreatedAt'
+        updatedAt:
+          allOf:
+          - $ref: '#/components/schemas/UpdatedAt'
+      required:
+      - environmentId
+      - type
+      - value
+      type: object
+    UpdateConfig:
+      description: Request to update a Config
+      properties:
+        type:
+          description: We currently only support one config type.
+          enum:
+          - settings
+          type: string
+        value:
+          description: Array of `Setting` objects that represent the default values
+            in your game.
+          items:
+            $ref: '#/components/schemas/Setting'
+          type: array
+      required:
+      - type
+      - value
+      type: object
+    ConfigCopyRequest:
+      description: Request to copy Config Settings
+      example:
+        settings:
+        - settings
+        - settings
+        destinationConfigId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        sourceConfigId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        sourceConfigId:
+          format: uuid
+          type: string
+        destinationConfigId:
+          format: uuid
+          type: string
+        settings:
+          description: Array of `Setting` keys that represent the Settings to be copied.
+          items:
+            type: string
+          type: array
+      required:
+      - destinationConfigId
+      - settings
+      - sourceConfigId
+      type: object
+    CreateConfigResponse:
+      description: A Config created response
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        id: ""
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/Id'
+        createdAt:
+          format: date-time
+          type: string
+      type: object
+    Setting:
+      description: |
+        Each Setting consists of a Key, Type, and Value:
+          - `key` the name of the setting
+          - `type` C# variable data type of the setting value
+          - `value` the value for this setting
+      oneOf:
+      - $ref: '#/components/schemas/StringSetting'
+      - $ref: '#/components/schemas/IntSetting'
+      - $ref: '#/components/schemas/BoolSetting'
+      - $ref: '#/components/schemas/FloatSetting'
+      - $ref: '#/components/schemas/LongSetting'
+      - $ref: '#/components/schemas/JsonSetting'
+    StringSetting:
+      properties:
+        key:
+          maximum: 255
+          minimum: 1
+          title: SettingKey
+          type: string
+        type:
+          enum:
+          - string
+          - int
+          - bool
+          - float
+          - long
+          - json
+          type: string
+        value:
+          description: Strings are limited to 10000 characters.
+          maxLength: 10000
+          type: string
+    IntSetting:
+      properties:
+        key:
+          maximum: 255
+          minimum: 1
+          title: SettingKey
+          type: string
+        type:
+          enum:
+          - int
+          type: string
+        value:
+          format: int32
+          type: integer
+    BoolSetting:
+      properties:
+        key:
+          maximum: 255
+          minimum: 1
+          title: SettingKey
+          type: string
+        type:
+          enum:
+          - bool
+          type: string
+        value:
+          type: boolean
+    FloatSetting:
+      properties:
+        key:
+          maximum: 255
+          minimum: 1
+          title: SettingKey
+          type: string
+        type:
+          enum:
+          - float
+          type: string
+        value:
+          format: float
+          type: number
+    LongSetting:
+      properties:
+        key:
+          maximum: 255
+          minimum: 1
+          title: SettingKey
+          type: string
+        type:
+          enum:
+          - long
+          type: string
+        value:
+          format: long
+          type: number
+    JsonSetting:
+      properties:
+        key:
+          maximum: 255
+          minimum: 1
+          title: SettingKey
+          type: string
+        type:
+          enum:
+          - json
+          type: string
+        value:
+          description: Limited to 10000 characters.
+          format: json
+          maxLength: 10000
+          type: object
+    _remote_config_v1_projects__projectId__environments__environmentId__configs_get_200_response:
+      example:
+        configs:
+        - createdAt: ""
+          environmentId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          id: ""
+          type: settings
+          projectId: ""
+          value:
+          - null
+          - null
+          updatedAt: ""
+        - createdAt: ""
+          environmentId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          id: ""
+          type: settings
+          projectId: ""
+          value:
+          - null
+          - null
+          updatedAt: ""
+      properties:
+        configs:
+          items:
+            $ref: '#/components/schemas/Config'
+          type: array
+      type: object
+    _remote_config_v1_projects__projectId__configs_copyto_post_404_response:
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        settings:
+          description: List of Setting keys that were not found in the source Config
+          items:
+            type: string
+          type: array
+      type: object
+    _remote_config_v1_projects__projectId__configs_copyto_post_409_response:
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        settings:
+          description: List of Setting keys that could not be copied due to a type
+            conflict
+          items:
+            type: string
+          type: array
+      type: object
+  securitySchemes:
+    ServiceAccount:
+      description: |-
+        To get started with Authentication, please visit the [Service Account Authentication section](https://services.docs.unity.com/docs/service-account-auth).
+
+        For this API, you will need to add the following role(s) to your service account:
+          | Role Type | Role Name | Permissions |
+          | --- | --- | --- |
+          | Project Level Role | Remote Config API Reader |<ul><li>remote_config.configs.get</li><li>remote_config.configs.list</li><li>remote_config.game_overrides.list</li><li>remote_config.game_overrides.get</li></ul>|
+          | Project Level Role | Remote Config API Editor |<ul><li>remote_config.configs.create</li><li>remote_config.configs.delete</li><li>remote_config.configs.update</li><li>remote_config.game_overrides.create</li><li>remote_config.game_overrides.update</li><li>remote_config.game_overrides.delete</li></ul>|
+          | Project Level Role | Remote Config Admin |<ul><li>remote_config.configs.create</li><li>remote_config.configs.get</li><li>remote_config.configs.list</li><li>remote_config.configs.delete</li><li>remote_config.configs.update</li><li>remote_config.game_overrides.create</li><li>remote_config.game_overrides.update</li><li>remote_config.game_overrides.delete</li><li>remote_config.game_overrides.list</li><li>remote_config.game_overrides.get</li></ul> |
+      scheme: basic
+      type: http
