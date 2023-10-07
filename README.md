@@ -104,9 +104,7 @@ Class | Method | HTTP request | Description
 *EnvironmentsAPI* | [**RemoteConfigV1ProjectsProjectIdEnvironmentsDefaultGet**](docs/EnvironmentsAPI.md#remoteconfigv1projectsprojectidenvironmentsdefaultget) | **Get** /remote-config/v1/projects/{projectId}/environments/default | Get Default Environment
 *EnvironmentsAPI* | [**RemoteConfigV1ProjectsProjectIdEnvironmentsEnvironmentIdGet**](docs/EnvironmentsAPI.md#remoteconfigv1projectsprojectidenvironmentsenvironmentidget) | **Get** /remote-config/v1/projects/{projectId}/environments/{environmentId} | Get Environment
 *EnvironmentsAPI* | [**RemoteConfigV1ProjectsProjectIdEnvironmentsGet**](docs/EnvironmentsAPI.md#remoteconfigv1projectsprojectidenvironmentsget) | **Get** /remote-config/v1/projects/{projectId}/environments | Get All Environments
-*GameOverridesAPI* | [**CreateGameOverride**](docs/GameOverridesAPI.md#creategameoverride) | **Post** /remote-config/v1/projects/{projectId}/environments/{environmentId}/campaigns | Create a game override
 *GameOverridesAPI* | [**DeleteGameOverride**](docs/GameOverridesAPI.md#deletegameoverride) | **Delete** /remote-config/v1/projects/{projectId}/campaigns/{campaignId} | Delete a single game override
-*GameOverridesAPI* | [**GetAllGameOverrides**](docs/GameOverridesAPI.md#getallgameoverrides) | **Get** /remote-config/v1/projects/{projectId}/environments/{environmentId}/campaigns | Get all game overrides
 *GameOverridesAPI* | [**GetGameOverride**](docs/GameOverridesAPI.md#getgameoverride) | **Get** /remote-config/v1/projects/{projectId}/campaigns/{campaignId} | Get a single game override
 *GameOverridesAPI* | [**UpdateGameOverride**](docs/GameOverridesAPI.md#updategameoverride) | **Put** /remote-config/v1/projects/{projectId}/campaigns/{campaignId} | Update a single game override
 

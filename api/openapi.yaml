@@ -429,79 +429,6 @@ paths:
           \ \\\n  -H 'Authorization: Basic <base64(key_id:secret_key)>'\n  -d '{\n\
           \  \t\"sourceConfigId\": \"<configId>\",\n    \"destinationConfigId\": \"\
           <configId>\",\n  \t\"settings\": [\"<keyOne>\",\"<keyTwo>\"]\n  }'\n"
-  /remote-config/v1/projects/{projectId}/environments/{environmentId}/campaigns:
-    get:
-      description: Returns all game overrides for a given project and environment
-      operationId: getAllGameOverrides
-      parameters:
-      - description: Genesis projectId
-        explode: false
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: Genesis environmentId
-        explode: false
-        in: path
-        name: environmentId
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetAllCampaignsResponse'
-          description: successful operation
-        "400":
-          description: Bad Request
-        "403":
-          description: Forbidden
-      security:
-      - ServiceAccount:
-        - remote_config.game_overrides.list
-      summary: Get all game overrides
-      tags:
-      - Game Overrides
-    post:
-      description: |
-        Create a new game override
-      operationId: createGameOverride
-      parameters:
-      - description: Genesis projectId
-        explode: false
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-        style: simple
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Campaign'
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CreateCampaignResponse'
-          description: successful operation
-        "400":
-          description: Bad Request
-        "403":
-          description: Forbidden
-      security:
-      - ServiceAccount:
-        - remote_config.game_overrides.create
-      summary: Create a game override
-      tags:
-      - Game Overrides
   /remote-config/v1/projects/{projectId}/campaigns/{campaignId}:
     delete:
       description: Deletes existing game override
@@ -797,9 +724,6 @@ components:
       - id
       type: object
     CreateCampaignResponse:
-      example:
-        createdAt: 2000-01-23T04:56:07.000+00:00
-        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
         id:
           format: uuid
@@ -1243,90 +1167,6 @@ components:
       type: object
     GetAllCampaignsResponse:
       description: A list of all campaigns for a given project
-      example:
-        campaigns:
-        - audience:
-          - All
-          endDate: 2020-08-09T17:13:56Z
-          kpi:
-          - kpi
-          - kpi
-          description: This override is a test
-          variants:
-          - name: name
-            weight: 0
-            content:
-            - values:
-              - null
-              - null
-              type: settings
-            - values:
-              - null
-              - null
-              type: settings
-          - name: name
-            weight: 0
-            content:
-            - values:
-              - null
-              - null
-              type: settings
-            - values:
-              - null
-              - null
-              type: settings
-          rolloutPercentage: 60
-          priority: 146
-          enabled: false
-          createdAt: 2000-01-23T04:56:07.000+00:00
-          condition: app.score >= 10
-          environmentId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          name: name
-          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          projectId: projectId
-          startDate: 2019-08-09T17:13:56Z
-          updatedAt: 2000-01-23T04:56:07.000+00:00
-        - audience:
-          - All
-          endDate: 2020-08-09T17:13:56Z
-          kpi:
-          - kpi
-          - kpi
-          description: This override is a test
-          variants:
-          - name: name
-            weight: 0
-            content:
-            - values:
-              - null
-              - null
-              type: settings
-            - values:
-              - null
-              - null
-              type: settings
-          - name: name
-            weight: 0
-            content:
-            - values:
-              - null
-              - null
-              type: settings
-            - values:
-              - null
-              - null
-              type: settings
-          rolloutPercentage: 60
-          priority: 146
-          enabled: false
-          createdAt: 2000-01-23T04:56:07.000+00:00
-          condition: app.score >= 10
-          environmentId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          name: name
-          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          projectId: projectId
-          startDate: 2019-08-09T17:13:56Z
-          updatedAt: 2000-01-23T04:56:07.000+00:00
       properties:
         campaigns:
           items:

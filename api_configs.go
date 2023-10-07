@@ -231,9 +231,15 @@ type ApiRemoteConfigV1ProjectsProjectIdConfigsConfigIdPutRequest struct {
 	ApiService *ConfigsAPIService
 	configId string
 	projectId string
+	uNKNOWNBASETYPE *UNKNOWN_BASE_TYPE
 }
 
 // Updated Config values
+func (r ApiRemoteConfigV1ProjectsProjectIdConfigsConfigIdPutRequest) UNKNOWNBASETYPE(uNKNOWNBASETYPE UNKNOWN_BASE_TYPE) ApiRemoteConfigV1ProjectsProjectIdConfigsConfigIdPutRequest {
+	r.uNKNOWNBASETYPE = &uNKNOWNBASETYPE
+	return r
+}
+
 func (r ApiRemoteConfigV1ProjectsProjectIdConfigsConfigIdPutRequest) Execute() (*http.Response, error) {
 	return r.ApiService.RemoteConfigV1ProjectsProjectIdConfigsConfigIdPutExecute(r)
 }
@@ -277,6 +283,9 @@ func (a *ConfigsAPIService) RemoteConfigV1ProjectsProjectIdConfigsConfigIdPutExe
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if r.uNKNOWNBASETYPE == nil {
+		return nil, reportError("uNKNOWNBASETYPE is required and must be specified")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
@@ -296,6 +305,7 @@ func (a *ConfigsAPIService) RemoteConfigV1ProjectsProjectIdConfigsConfigIdPutExe
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
+	localVarPostBody = r.uNKNOWNBASETYPE
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return nil, err
@@ -431,9 +441,15 @@ type ApiRemoteConfigV1ProjectsProjectIdConfigsPostRequest struct {
 	ctx context.Context
 	ApiService *ConfigsAPIService
 	projectId string
+	uNKNOWNBASETYPE *UNKNOWN_BASE_TYPE
 }
 
 // Config object
+func (r ApiRemoteConfigV1ProjectsProjectIdConfigsPostRequest) UNKNOWNBASETYPE(uNKNOWNBASETYPE UNKNOWN_BASE_TYPE) ApiRemoteConfigV1ProjectsProjectIdConfigsPostRequest {
+	r.uNKNOWNBASETYPE = &uNKNOWNBASETYPE
+	return r
+}
+
 func (r ApiRemoteConfigV1ProjectsProjectIdConfigsPostRequest) Execute() (*CreateConfigResponse, *http.Response, error) {
 	return r.ApiService.RemoteConfigV1ProjectsProjectIdConfigsPostExecute(r)
 }
@@ -476,6 +492,9 @@ func (a *ConfigsAPIService) RemoteConfigV1ProjectsProjectIdConfigsPostExecute(r 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if r.uNKNOWNBASETYPE == nil {
+		return localVarReturnValue, nil, reportError("uNKNOWNBASETYPE is required and must be specified")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
@@ -495,6 +514,7 @@ func (a *ConfigsAPIService) RemoteConfigV1ProjectsProjectIdConfigsPostExecute(r 
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
+	localVarPostBody = r.uNKNOWNBASETYPE
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
