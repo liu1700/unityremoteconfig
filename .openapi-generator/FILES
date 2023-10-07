@@ -4,7 +4,6 @@ README.md
 api/openapi.yaml
 api_configs.go
 api_environments.go
-api_game_overrides.go
 client.go
 configuration.go
 docs/BoolSetting.md
@@ -21,7 +20,6 @@ docs/DefaultEnvironmentResponse.md
 docs/Environment.md
 docs/EnvironmentsAPI.md
 docs/FloatSetting.md
-docs/GameOverridesAPI.md
 docs/GetAllCampaignsResponse.md
 docs/GetCampaignResponse.md
 docs/GetEnvironmentsResponse.md

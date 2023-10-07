@@ -52,8 +52,6 @@ type APIClient struct {
 	ConfigsAPI *ConfigsAPIService
 
 	EnvironmentsAPI *EnvironmentsAPIService
-
-	GameOverridesAPI *GameOverridesAPIService
 }
 
 type service struct {
@@ -74,7 +72,6 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	// API Services
 	c.ConfigsAPI = (*ConfigsAPIService)(&c.common)
 	c.EnvironmentsAPI = (*EnvironmentsAPIService)(&c.common)
-	c.GameOverridesAPI = (*GameOverridesAPIService)(&c.common)
 
 	return c
 }

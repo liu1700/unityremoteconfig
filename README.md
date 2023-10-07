@@ -96,17 +96,12 @@ Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *ConfigsAPI* | [**RemoteConfigV1ProjectsProjectIdConfigsConfigIdDelete**](docs/ConfigsAPI.md#remoteconfigv1projectsprojectidconfigsconfigiddelete) | **Delete** /remote-config/v1/projects/{projectId}/configs/{configId} | Delete Config
 *ConfigsAPI* | [**RemoteConfigV1ProjectsProjectIdConfigsConfigIdGet**](docs/ConfigsAPI.md#remoteconfigv1projectsprojectidconfigsconfigidget) | **Get** /remote-config/v1/projects/{projectId}/configs/{configId} | Get Config
-*ConfigsAPI* | [**RemoteConfigV1ProjectsProjectIdConfigsConfigIdPut**](docs/ConfigsAPI.md#remoteconfigv1projectsprojectidconfigsconfigidput) | **Put** /remote-config/v1/projects/{projectId}/configs/{configId} | Update Config
 *ConfigsAPI* | [**RemoteConfigV1ProjectsProjectIdConfigsGet**](docs/ConfigsAPI.md#remoteconfigv1projectsprojectidconfigsget) | **Get** /remote-config/v1/projects/{projectId}/configs | Get config with the default environment
-*ConfigsAPI* | [**RemoteConfigV1ProjectsProjectIdConfigsPost**](docs/ConfigsAPI.md#remoteconfigv1projectsprojectidconfigspost) | **Post** /remote-config/v1/projects/{projectId}/configs | Create Config
 *ConfigsAPI* | [**RemoteConfigV1ProjectsProjectIdConfigscopytoPost**](docs/ConfigsAPI.md#remoteconfigv1projectsprojectidconfigscopytopost) | **Post** /remote-config/v1/projects/{projectId}/configs:copyto | Copy Config Settings
 *ConfigsAPI* | [**RemoteConfigV1ProjectsProjectIdEnvironmentsEnvironmentIdConfigsGet**](docs/ConfigsAPI.md#remoteconfigv1projectsprojectidenvironmentsenvironmentidconfigsget) | **Get** /remote-config/v1/projects/{projectId}/environments/{environmentId}/configs | Get Configs by Environment ID
 *EnvironmentsAPI* | [**RemoteConfigV1ProjectsProjectIdEnvironmentsDefaultGet**](docs/EnvironmentsAPI.md#remoteconfigv1projectsprojectidenvironmentsdefaultget) | **Get** /remote-config/v1/projects/{projectId}/environments/default | Get Default Environment
 *EnvironmentsAPI* | [**RemoteConfigV1ProjectsProjectIdEnvironmentsEnvironmentIdGet**](docs/EnvironmentsAPI.md#remoteconfigv1projectsprojectidenvironmentsenvironmentidget) | **Get** /remote-config/v1/projects/{projectId}/environments/{environmentId} | Get Environment
 *EnvironmentsAPI* | [**RemoteConfigV1ProjectsProjectIdEnvironmentsGet**](docs/EnvironmentsAPI.md#remoteconfigv1projectsprojectidenvironmentsget) | **Get** /remote-config/v1/projects/{projectId}/environments | Get All Environments
-*GameOverridesAPI* | [**DeleteGameOverride**](docs/GameOverridesAPI.md#deletegameoverride) | **Delete** /remote-config/v1/projects/{projectId}/campaigns/{campaignId} | Delete a single game override
-*GameOverridesAPI* | [**GetGameOverride**](docs/GameOverridesAPI.md#getgameoverride) | **Get** /remote-config/v1/projects/{projectId}/campaigns/{campaignId} | Get a single game override
-*GameOverridesAPI* | [**UpdateGameOverride**](docs/GameOverridesAPI.md#updategameoverride) | **Put** /remote-config/v1/projects/{projectId}/campaigns/{campaignId} | Update a single game override
 
 
 ## Documentation For Models

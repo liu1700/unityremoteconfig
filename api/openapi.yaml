@@ -183,42 +183,6 @@ paths:
           curl -X GET \
           https://services.api.unity.com/remote-config/v1/projects/{projectId}/configs \
             -H 'Authorization: Basic <base64(key_id:secret_key)>' \
-    post:
-      description: Create Config.
-      parameters:
-      - description: Genesis projectId
-        explode: false
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-        style: simple
-      requestBody:
-        $ref: '#/components/requestBodies/Config'
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CreateConfigResponse'
-          description: successful operation
-        "400":
-          description: Bad Request
-        "403":
-          description: Forbidden
-      security:
-      - ServiceAccount:
-        - remote_config.configs.create
-      summary: Create Config
-      tags:
-      - Configs
-      x-codeSamples:
-      - lang: curl
-        source: "curl -X POST \\\nhttps://services.api.unity.com/remote-config/v1/projects/{projectId}/configs\
-          \ \\\n  -H 'Authorization: Basic <base64(key_id:secret_key)>'\n  -d '{\n\
-          \  \t\"environmentId\": \"<environmentId>\",\n  \t\"type\": \"settings\"\
-          ,\n  \t\"value\": []\n  }'\n"
   /remote-config/v1/projects/{projectId}/configs/{configId}:
     delete:
       description: Deletes an existing Config
@@ -296,45 +260,6 @@ paths:
           curl -X GET \
           https://services.api.unity.com/remote-config/v1/projects/{projectId}/configs/{configId} \
             -H 'Authorization: Basic <base64(key_id:secret_key)>'
-    put:
-      description: Updates the value of an existing Config
-      parameters:
-      - description: Configuration Id
-        explode: false
-        in: path
-        name: configId
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: Genesis projectId
-        explode: false
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-        style: simple
-      requestBody:
-        $ref: '#/components/requestBodies/UpdateConfig'
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-        "403":
-          description: Forbidden
-      security:
-      - ServiceAccount:
-        - remote_config.configs.update
-      summary: Update Config
-      tags:
-      - Configs
-      x-codeSamples:
-      - lang: curl
-        source: "curl -X PUT \\\nhttps://services.api.unity.com/remote-config/v1/projects/{projectId}/configs/{configId}\
-          \ \\\n  -H 'Authorization: Basic <base64(key_id:secret_key)>' \\\n  -d '{\n\
-          \  \t\"type\": \"settings\",\n  \t\"value\": []\n  }'\n"
   /remote-config/v1/projects/{projectId}/environments/{environmentId}/configs:
     get:
       description: "Returns the list of all configs for a Environment. Currently,\
@@ -429,118 +354,6 @@ paths:
           \ \\\n  -H 'Authorization: Basic <base64(key_id:secret_key)>'\n  -d '{\n\
           \  \t\"sourceConfigId\": \"<configId>\",\n    \"destinationConfigId\": \"\
           <configId>\",\n  \t\"settings\": [\"<keyOne>\",\"<keyTwo>\"]\n  }'\n"
-  /remote-config/v1/projects/{projectId}/campaigns/{campaignId}:
-    delete:
-      description: Deletes existing game override
-      operationId: deleteGameOverride
-      parameters:
-      - description: Campaign ID
-        explode: false
-        in: path
-        name: campaignId
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: Project Id
-        explode: false
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "200":
-          description: Successful operation
-        "400":
-          description: Bad Request
-        "403":
-          description: Forbidden
-        "404":
-          description: Campaign Not Found
-      security:
-      - ServiceAccount:
-        - remote_config.game_overrides.delete
-      summary: Delete a single game override
-      tags:
-      - Game Overrides
-    get:
-      description: Retrieve a game override
-      operationId: getGameOverride
-      parameters:
-      - description: Campaign ID
-        explode: false
-        in: path
-        name: campaignId
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: Project Id
-        explode: false
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetCampaignResponse'
-          description: A single campaign
-        "400":
-          description: Bad Request
-        "403":
-          description: Forbidden
-      security:
-      - ServiceAccount:
-        - remote_config.game_overrides.list
-      summary: Get a single game override
-      tags:
-      - Game Overrides
-    put:
-      description: Updates an existing game override
-      operationId: updateGameOverride
-      parameters:
-      - description: Campaign ID
-        explode: false
-        in: path
-        name: campaignId
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: Project Id
-        explode: false
-        in: path
-        name: projectId
-        required: true
-        schema:
-          type: string
-        style: simple
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Campaign'
-        required: true
-      responses:
-        "200":
-          description: Successful operation
-        "400":
-          description: Bad Request
-        "403":
-          description: Forbidden
-      security:
-      - ServiceAccount:
-        - remote_config.game_overrides.update
-      summary: Update a single game override
-      tags:
-      - Game Overrides
 components:
   requestBodies:
     Config:
@@ -738,11 +551,6 @@ components:
       title: CreateCampaignResponse
       type: object
     CampaignContentVariant:
-      example:
-        values:
-        - null
-        - null
-        type: settings
       properties:
         type:
           enum:
@@ -759,18 +567,6 @@ components:
       - values
       title: CampaignContentVariant
     CampaignVariants:
-      example:
-        name: name
-        weight: 0
-        content:
-        - values:
-          - null
-          - null
-          type: settings
-        - values:
-          - null
-          - null
-          type: settings
       properties:
         name:
           type: string
@@ -791,47 +587,6 @@ components:
       title: CampaignVariants
     Campaign:
       description: Response type for a Campaign.
-      example:
-        audience:
-        - All
-        kpi:
-        - kpi
-        - kpi
-        endDate: 2020-08-09T17:13:56Z
-        description: This override is a test
-        variants:
-        - name: name
-          weight: 0
-          content:
-          - values:
-            - null
-            - null
-            type: settings
-          - values:
-            - null
-            - null
-            type: settings
-        - name: name
-          weight: 0
-          content:
-          - values:
-            - null
-            - null
-            type: settings
-          - values:
-            - null
-            - null
-            type: settings
-        rolloutPercentage: 8
-        priority: 602
-        enabled: false
-        createdAt: 2000-01-23T04:56:07.000+00:00
-        condition: app.score >= 10
-        environmentId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-        name: name
-        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-        startDate: 2019-08-09T17:13:56Z
-        updatedAt: 2000-01-23T04:56:07.000+00:00
       properties:
         id:
           format: uuid
@@ -976,48 +731,6 @@ components:
       type: object
     GetCampaignResponse:
       description: Get Campaign response
-      example:
-        audience:
-        - All
-        endDate: 2020-08-09T17:13:56Z
-        kpi:
-        - kpi
-        - kpi
-        description: This override is a test
-        variants:
-        - name: name
-          weight: 0
-          content:
-          - values:
-            - null
-            - null
-            type: settings
-          - values:
-            - null
-            - null
-            type: settings
-        - name: name
-          weight: 0
-          content:
-          - values:
-            - null
-            - null
-            type: settings
-          - values:
-            - null
-            - null
-            type: settings
-        rolloutPercentage: 60
-        priority: 146
-        enabled: false
-        createdAt: 2000-01-23T04:56:07.000+00:00
-        condition: app.score >= 10
-        environmentId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-        name: name
-        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-        projectId: projectId
-        startDate: 2019-08-09T17:13:56Z
-        updatedAt: 2000-01-23T04:56:07.000+00:00
       properties:
         id:
           format: uuid
@@ -1262,9 +975,6 @@ components:
       type: object
     CreateConfigResponse:
       description: A Config created response
-      example:
-        createdAt: 2000-01-23T04:56:07.000+00:00
-        id: ""
       properties:
         id:
           allOf:
